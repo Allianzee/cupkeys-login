@@ -1,13 +1,3 @@
-// ====== FIREBASE CONFIG ======
-const firebaseConfig = {
-  apiKey: "AIzaSyC73b_K2-bUzwv4CPleIIQkRyLHMaIafes",
-  authDomain: "cupkeys-bdccc.firebaseapp.com",
-  projectId: "cupkeys-bdccc",
-  storageBucket: "cupkeys-bdccc.firebasestorage.app",
-  messagingSenderId: "505506703823",
-  appId: "1:505506703823:web:4d41259542a2015495caba"
-};
-
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 // ====== GET FIREBASE AUTH (Already initialized in index.html) ======
