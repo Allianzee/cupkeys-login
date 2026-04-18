@@ -1,3 +1,6 @@
+// ====== GET FIREBASE AUTH (Already initialized in index.html) ======
+const auth = window.firebaseAuth || firebase.auth();
+
 console.log("✓ Script.js loaded - Firebase auth ready");
 
 // Get Google Client ID from environment
