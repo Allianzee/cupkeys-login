@@ -127,7 +127,7 @@ discordBtn.addEventListener("click", (e) => {
         showStatus("Redirecting to Discord...");
         
         // Get Discord Client ID (from environment or hardcoded)
-        const clientId = "1332313247589146634"; // Replace with your actual Discord Client ID
+        const clientId = "1495077498642239760"; // Replace with your actual Discord Client ID
         const redirectUri = `${window.location.origin}/`;
         const state = Math.random().toString(36).substring(7);
         
@@ -161,7 +161,7 @@ async function handleDiscordCallback(code, state) {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: new URLSearchParams({
-                client_id: "1332313247589146634", // Replace with your Discord Client ID
+                client_id: "1495077498642239760", // Replace with your Discord Client ID
                 client_secret: "YOUR_DISCORD_CLIENT_SECRET", // This should be in backend, not here!
                 code: code,
                 grant_type: "authorization_code",
