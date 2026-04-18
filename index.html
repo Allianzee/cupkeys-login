@@ -80,11 +80,28 @@
         <div id="statusMsg" class="status-msg"></div>
     </div>
 
-        <!-- Firebase SDK (Must load BEFORE script.js) -->
+            <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
 
-    <!-- Your Script (Load AFTER Firebase) -->
+    <!-- Initialize Firebase BEFORE script.js loads -->
+    <script>
+        // Firebase config
+        const firebaseConfig = {
+          apiKey: "AIzaSyC73b_K2-bUzwv4CPleIIQkRyLHMaIafes",
+          authDomain: "cupkeys-bdccc.firebaseapp.com",
+          projectId: "cupkeys-bdccc",
+          storageBucket: "cupkeys-bdccc.firebasestorage.app",
+          messagingSenderId: "505506703823",
+          appId: "1:505506703823:web:4d41259542a2015495caba"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        console.log("✓ Firebase initialized");
+    </script>
+
+    <!-- Your Script (loads AFTER Firebase is initialized) -->
     <script src="script.js"></script>
 </body>
 </html>
