@@ -22,6 +22,9 @@ const btnText = document.getElementById("btnText");
 const btnLoader = document.getElementById("btnLoader");
 const toggleText = document.getElementById("toggleText");
 
+const googleBtn = document.getElementById("googleBtn");
+const discordBtn = document.getElementById("discordBtn");
+
 let isRegisterMode = false;
 
 // ====== EMAIL/PASSWORD TOGGLE ======
@@ -80,6 +83,37 @@ loginForm.addEventListener("submit", async (e) => {
     } catch (error) {
         showError(error.message);
         showLoading(false);
+    }
+});
+
+// ====== GOOGLE LOGIN ======
+googleBtn.addEventListener("click", async () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    
+    try {
+        showStatus("Redirecting to Google...");
+        const result = await auth.signInWithPopup(provider);
+        await handleAuthSuccess(result.user);
+    } catch (error) {
+        showError(error.message);
+    }
+});
+
+// ====== DISCORD LOGIN ======
+discordBtn.addEventListener("click", async () => {
+    try {
+        const googleClientId = "{{ VITE_GOOGLE_CLIENT_ID }}"; // Will be replaced by Vercel
+        const discordClientId = "{{ VITE_DISCORD_CLIENT_ID }}"; // Will be replaced by Vercel
+        const redirectUri = `${window.location.origin}/callback`;
+        const state = Math.random().toString(36).substring(7);
+        
+        sessionStorage.setItem("discord_state", state);
+        
+        const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${discordClientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=identify%20email&state=${state}`;
+        
+        window.location.href = discordAuthUrl;
+    } catch (error) {
+        showError(error.message);
     }
 });
 
