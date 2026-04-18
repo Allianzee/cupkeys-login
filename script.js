@@ -3,9 +3,7 @@ const auth = window.firebaseAuth || firebase.auth();
 
 console.log("✓ Script.js loaded - Firebase auth ready");
 
-// Get Google Client ID from environment
-const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID";
-const DISCORD_CLIENT_ID = "1332313247589146634"; // Replace with your Discord Client ID
+const DISCORD_CLIENT_ID = "1495077498642239760"; // Replace with your Discord Client ID
 
 // ====== DOM ELEMENTS ======
 const loginForm = document.getElementById("loginForm");
@@ -78,15 +76,41 @@ loginForm.addEventListener("submit", async (e) => {
 
     try {
         let userCredential;
+        const isRegister = isRegisterMode;
 
         if (isRegisterMode) {
             userCredential = await auth.createUserWithEmailAndPassword(email, password);
-            showStatus("Account created! Logging in...");
+            showStatus("Account created! Sending verification email...");
         } else {
             userCredential = await auth.signInWithEmailAndPassword(email, password);
         }
 
-        await handleAuthSuccess(userCredential.user);
+        const user = userCredential.user;
+
+        // Send verification email if not verified
+        if (!user.emailVerified && isRegister) {
+            await user.sendEmailVerification();
+            showStatus("✓ Verification email sent! Check your inbox to verify your email.");
+            
+            // Wait 3 seconds then redirect
+            setTimeout(() => {
+                redirectToGame(user.uid, user.uid, user.email);
+            }, 3000);
+            return;
+        }
+
+        // Send login/register notification email
+        fetch('/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: user.email,
+                type: isRegister ? 'register' : 'login',
+                username: user.email.split('@')[0]
+            })
+        }).catch(err => console.log('Email notification failed:', err));
+
+        await handleAuthSuccess(user);
 
     } catch (error) {
         console.error("Auth error:", error);
@@ -104,6 +128,18 @@ googleBtn.addEventListener("click", async (e) => {
     try {
         showStatus("Redirecting to Google...");
         const result = await auth.signInWithPopup(provider);
+        
+        // Send login notification email
+        fetch('/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: result.user.email,
+                type: 'login',
+                username: result.user.displayName || result.user.email.split('@')[0]
+            })
+        }).catch(err => console.log('Email notification failed:', err));
+
         await handleAuthSuccess(result.user);
     } catch (error) {
         console.error("Google auth error:", error);
@@ -119,9 +155,8 @@ discordBtn.addEventListener("click", (e) => {
     try {
         showStatus("Redirecting to Discord...");
         
-        // Get Discord Client ID (from environment or hardcoded)
-        const clientId = "1495077498642239760"; // Replace with your actual Discord Client ID
-        const redirectUri = `${window.location.origin}/`;
+        const clientId = DISCORD_CLIENT_ID;
+        const redirectUri = window.location.origin + "/";
         const state = Math.random().toString(36).substring(7);
         
         // Store state for validation
@@ -149,52 +184,65 @@ async function handleDiscordCallback(code, state) {
             throw new Error("State mismatch - possible CSRF attack");
         }
 
-        // Exchange code for token via Discord API
-        const response = await fetch("https://discord.com/api/oauth2/token", {
+        // Call our backend API to exchange code securely
+        const response = await fetch("/api/discord", {
             method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({
-                client_id: "1495077498642239760", // Replace with your Discord Client ID
-                client_secret: "YOUR_DISCORD_CLIENT_SECRET", // This should be in backend, not here!
-                code: code,
-                grant_type: "authorization_code",
-                redirect_uri: window.location.origin + "/"
-            })
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code })
         });
 
         if (!response.ok) {
-            throw new Error(`Discord API error: ${response.status}`);
+            throw new Error(`Backend error: ${response.status}`);
         }
 
         const data = await response.json();
-        const accessToken = data.access_token;
 
-        // Get user info
-        const userResponse = await fetch("https://discord.com/api/users/@me", {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        });
+        if (!data.success) {
+            throw new Error(data.error || "Discord auth failed");
+        }
 
-        const user = await userResponse.json();
+        // Now use Firebase to authenticate with Discord email
+        const { email, discordId, username } = data;
+        
+        // Create password from Discord ID (for Firebase)
+        const tempPassword = "Discord_" + discordId;
 
-        // Create custom Firebase user
-        // Since Discord doesn't directly integrate with Firebase,
-        // we'll create a custom token or use email if available
-        if (user.email) {
-            // Try to sign in with Discord email
-            try {
-                const result = await auth.signInWithEmailAndPassword(user.email, "Discord_" + user.id);
+        try {
+            // Try to sign in
+            const result = await auth.signInWithEmailAndPassword(email, tempPassword);
+            
+            // Send login notification
+            fetch('/api/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: email,
+                    type: 'login',
+                    username: username
+                })
+            }).catch(err => console.log('Email notification failed:', err));
+
+            await handleAuthSuccess(result.user);
+        } catch (err) {
+            // If user doesn't exist, create one
+            if (err.code === 'auth/user-not-found') {
+                const result = await auth.createUserWithEmailAndPassword(email, tempPassword);
+                
+                // Send registration notification
+                fetch('/api/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        type: 'register',
+                        username: username
+                    })
+                }).catch(err => console.log('Email notification failed:', err));
+
                 await handleAuthSuccess(result.user);
-            } catch (err) {
-                // If user doesn't exist, create one
-                if (err.code === 'auth/user-not-found') {
-                    const result = await auth.createUserWithEmailAndPassword(user.email, "Discord_" + user.id);
-                    await handleAuthSuccess(result.user);
-                } else {
-                    throw err;
-                }
+            } else {
+                throw err;
             }
-        } else {
-            throw new Error("Discord account missing email - please enable email in Discord");
         }
 
     } catch (error) {
