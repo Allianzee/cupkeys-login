@@ -80,10 +80,10 @@
         <div id="statusMsg" class="status-msg"></div>
     </div>
 
-                <!-- Firebase SDK (Compat version - simpler syntax) -->
+                   <!-- Firebase SDK (Compat version) -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-compat.js"></script>
 
-    <!-- Initialize Firebase BEFORE script.js loads -->
+    <!-- Initialize Firebase -->
     <script>
         // Firebase config
         const firebaseConfig = {
@@ -97,10 +97,11 @@
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
+        window.firebaseAuth = firebase.auth(); // Make it global
         console.log("✓ Firebase initialized");
     </script>
 
-    <!-- Your Script (loads AFTER Firebase is initialized) -->
+    <!-- Your Script (load AFTER Firebase) -->
     <script src="script.js"></script>
 </body>
 </html>
