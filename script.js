@@ -1,11 +1,17 @@
 // ====== FIREBASE CONFIG ======
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyDummyKeyReplaceMeWithActual",
-    authDomain: "cupkeys-test.firebaseapp.com",
-    projectId: "cupkeys-test",
-    storageBucket: "cupkeys-test.appspot.com",
-    messagingSenderId: "123456789000",
-    appId: "1:123456789000:web:abcdef123456"
+  apiKey: "AIzaSyC73b_K2-bUzwv4CPleIIQkRyLHMaIafes",
+  authDomain: "cupkeys-bdccc.firebaseapp.com",
+  projectId: "cupkeys-bdccc",
+  storageBucket: "cupkeys-bdccc.firebasestorage.app",
+  messagingSenderId: "505506703823",
+  appId: "1:505506703823:web:4d41259542a2015495caba"
 };
 
 // Initialize Firebase
