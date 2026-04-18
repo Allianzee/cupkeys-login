@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Discord Callback</title>
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js"></script>
+</head>
+<body>
+    <p>Processing Discord login...</p>
+
+    <script>
+        // Get auth code from URL
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+        const state = params.get('state');
+
+        if (!code) {
+            alert('Discord auth failed: no code');
+            window.location.href = '/';
+        }
+
+        // Send code to backend to exchange for token
+        fetch('/api/discord-auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code, state })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.token) {
+                // Redirect to game
+                const redirectUrl = `cupkeys://auth?token=${encodeURIComponent(data.token)}&userid=${data.userId}&email=${encodeURIComponent(data.email)}`;
+                window.location.href = redirectUrl;
+
+                // Fallback
+                setTimeout(() => {
+                    alert(`Token: ${data.token}`);
+                }, 2000);
+            } else {
+                alert('Auth failed: ' + data.error);
+                window.location.href = '/';
+            }
+        })
+        .catch(err => {
+            alert('Error: ' + err.message);
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html>
