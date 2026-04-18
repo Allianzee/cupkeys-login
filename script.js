@@ -1,5 +1,3 @@
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
 // ====== GET FIREBASE AUTH (Already initialized in index.html) ======
 const auth = firebase.auth();
 
