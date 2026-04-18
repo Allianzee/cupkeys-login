@@ -10,11 +10,14 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+// ====== GET FIREBASE AUTH (Already initialized in index.html) ======
 const auth = firebase.auth();
 
+console.log("✓ Script.js loaded - Firebase auth ready");
+
 // Get Google Client ID from environment
-const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID"; // Will be replaced in .env
-const DISCORD_CLIENT_ID = "YOUR_DISCORD_CLIENT_ID"; // Will be replaced in .env
+const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID";
+const DISCORD_CLIENT_ID = "1332313247589146634"; // Replace with your Discord Client ID
 
 // ====== DOM ELEMENTS ======
 const loginForm = document.getElementById("loginForm");
@@ -30,6 +33,8 @@ const googleBtn = document.getElementById("googleBtn");
 const discordBtn = document.getElementById("discordBtn");
 
 let isRegisterMode = false;
+
+console.log("✓ DOM elements loaded");
 
 // ====== CHECK FOR CALLBACK PARAMS ======
 window.addEventListener('load', () => {
