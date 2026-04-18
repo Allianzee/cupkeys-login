@@ -22,11 +22,6 @@ const btnText = document.getElementById("btnText");
 const btnLoader = document.getElementById("btnLoader");
 const toggleText = document.getElementById("toggleText");
 
-const googleBtn = document.getElementById("googleBtn");
-const appleBtn = document.getElementById("appleBtn");
-const discordBtn = document.getElementById("discordBtn");
-const githubBtn = document.getElementById("githubBtn");
-
 let isRegisterMode = false;
 
 // ====== EMAIL/PASSWORD TOGGLE ======
@@ -88,68 +83,6 @@ loginForm.addEventListener("submit", async (e) => {
     }
 });
 
-// ====== GOOGLE LOGIN ======
-googleBtn.addEventListener("click", async () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    
-    try {
-        showStatus("Redirecting to Google...");
-        const result = await auth.signInWithPopup(provider);
-        await handleAuthSuccess(result.user);
-    } catch (error) {
-        showError(error.message);
-    }
-});
-
-// ====== APPLE LOGIN ======
-appleBtn.addEventListener("click", async () => {
-    const provider = new firebase.auth.OAuthProvider('apple.com');
-    provider.addScope('email');
-    provider.addScope('name');
-    
-    try {
-        showStatus("Redirecting to Apple...");
-        const result = await auth.signInWithPopup(provider);
-        await handleAuthSuccess(result.user);
-    } catch (error) {
-        showError(error.message);
-    }
-});
-
-// ====== DISCORD LOGIN ======
-discordBtn.addEventListener("click", async () => {
-    try {
-        const clientId = "YOUR_DISCORD_CLIENT_ID";
-        const redirectUri = `${window.location.origin}/callback`;
-        const state = Math.random().toString(36).substring(7);
-        
-        sessionStorage.setItem("discord_state", state);
-        
-        const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=identify%20email&state=${state}`;
-        
-        window.location.href = discordAuthUrl;
-    } catch (error) {
-        showError(error.message);
-    }
-});
-
-// ====== GITHUB LOGIN ======
-githubBtn.addEventListener("click", async () => {
-    try {
-        const clientId = "YOUR_GITHUB_CLIENT_ID";
-        const redirectUri = `${window.location.origin}/callback`;
-        const state = Math.random().toString(36).substring(7);
-        
-        sessionStorage.setItem("github_state", state);
-        
-        const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=user:email&state=${state}`;
-        
-        window.location.href = githubAuthUrl;
-    } catch (error) {
-        showError(error.message);
-    }
-});
-
 // ====== HANDLE AUTH SUCCESS ======
 async function handleAuthSuccess(user) {
     try {
@@ -157,7 +90,7 @@ async function handleAuthSuccess(user) {
         const userId = user.uid;
         const userEmail = user.email || "";
 
-        showStatus("Login successful! Redirecting...");
+        showStatus("Login successful! Redirecting to game...");
 
         setTimeout(() => {
             redirectToGame(idToken, userId, userEmail);
@@ -175,8 +108,10 @@ function redirectToGame(token, userId, userEmail) {
     
     window.location.href = redirectUrl;
 
+    // Fallback if game doesn't open
     setTimeout(() => {
-        alert(`Cupkeys didn't open. Here's your token:\n\n${token}\n\nCopy this into the game.`);
+        showStatus(`Token: ${token}`);
+        console.log("Token:", token);
     }, 2000);
 }
 
