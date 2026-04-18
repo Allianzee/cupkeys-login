@@ -1,10 +1,4 @@
 // ====== FIREBASE CONFIG ======
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyC73b_K2-bUzwv4CPleIIQkRyLHMaIafes",
   authDomain: "cupkeys-bdccc.firebaseapp.com",
@@ -26,7 +20,6 @@ const errorMsg = document.getElementById("errorMsg");
 const statusMsg = document.getElementById("statusMsg");
 const btnText = document.getElementById("btnText");
 const btnLoader = document.getElementById("btnLoader");
-const toggleLink = document.getElementById("toggleLink");
 const toggleText = document.getElementById("toggleText");
 
 const googleBtn = document.getElementById("googleBtn");
@@ -48,11 +41,12 @@ document.addEventListener("click", (e) => {
 });
 
 function updateFormMode() {
+    const heading = document.querySelector(".login-form h2");
     if (isRegisterMode) {
-        document.querySelector(".login-form h2").textContent = "Register";
+        heading.textContent = "Register";
         toggleText.innerHTML = 'Already have an account? <a href="#" id="toggleLink">Login</a>';
     } else {
-        document.querySelector(".login-form h2").textContent = "Login";
+        heading.textContent = "Login";
         toggleText.innerHTML = 'Don\'t have an account? <a href="#" id="toggleLink">Register</a>';
     }
 }
