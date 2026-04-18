@@ -52,6 +52,8 @@ body::after {
     box-shadow: 0 15px 0 #ff8c42, 0 25px 40px rgba(0,0,0,0.2);
     transform: rotate(-1deg);
     animation: popIn 0.4s ease;
+    position: relative;
+    z-index: 10;
 }
 
 @keyframes popIn {
@@ -75,11 +77,21 @@ body::after {
     font-size: 2.8em;
     color: #ff6b00;
     text-shadow: 2px 2px 0 #000;
+    margin-bottom: 5px;
 }
 
 .logo p {
     color: #555;
-    font-size: 0.9em;
+    font-size: 0.95em;
+    font-weight: bold;
+}
+
+/* ===== FORM TITLE ===== */
+.login-form h2 {
+    text-align: center;
+    color: #ff6b00;
+    font-size: 1.5em;
+    margin-bottom: 20px;
 }
 
 /* ===== INPUTS ===== */
@@ -88,8 +100,11 @@ body::after {
 }
 
 .form-group label {
-    font-size: 0.85em;
+    font-size: 0.95em;
     color: #444;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
 }
 
 .form-group input {
@@ -99,13 +114,19 @@ body::after {
     border: 3px solid #ff8c42;
     background: #fff;
     font-size: 1em;
+    font-family: inherit;
     transition: 0.2s;
+}
+
+.form-group input::placeholder {
+    color: #ccc;
 }
 
 .form-group input:focus {
     outline: none;
     transform: scale(1.03);
     border-color: #ff4d00;
+    box-shadow: 0 0 10px rgba(255, 107, 0, 0.3);
 }
 
 /* ===== BUTTON ===== */
@@ -116,76 +137,172 @@ body::after {
     border: none;
     font-size: 1.1em;
     font-weight: bold;
-    background: #ff6b00;
+    background: linear-gradient(135deg, #ff6b00, #ff8c42);
     color: white;
     cursor: pointer;
     transition: 0.2s;
     box-shadow: 0 6px 0 #c94e00;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
-.btn-login:hover {
+.btn-login:hover:not(:disabled) {
     transform: translateY(-3px) scale(1.05);
 }
 
-.btn-login:active {
+.btn-login:active:not(:disabled) {
     transform: translateY(3px);
     box-shadow: 0 2px 0 #c94e00;
+}
+
+.btn-login:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* ===== LOADER ===== */
+.loader {
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top: 3px solid white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* ===== MESSAGES ===== */
 .error-msg {
     background: #ffdddd;
-    color: #ff0000;
-    padding: 10px;
+    color: #c41e3a;
+    padding: 12px;
     border-radius: 12px;
     display: none;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    border-left: 4px solid #ff0000;
+    font-weight: bold;
+}
+
+.error-msg.show {
+    display: block;
+    animation: slideIn 0.3s ease-out;
 }
 
 .status-msg {
     background: #ddffdd;
     color: #008000;
-    padding: 10px;
+    padding: 12px;
     border-radius: 12px;
     display: none;
-    margin-top: 10px;
-}
-
-.show {
-    display: block;
-}
-
-/* ===== SOCIAL ===== */
-.social-login {
     margin-top: 15px;
+    border-left: 4px solid #00c800;
+    font-weight: bold;
+}
+
+.status-msg.show {
+    display: block;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== TOGGLE AUTH ===== */
+.toggle-auth {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.toggle-auth a {
+    color: #ff6b00;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.toggle-auth a:hover {
+    text-decoration: underline;
+}
+
+/* ===== SOCIAL LOGIN ===== */
+.social-login {
+    margin-top: 20px;
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
 .btn-social {
-    padding: 10px;
+    padding: 12px;
     border-radius: 15px;
-    border: 2px dashed #ff8c42;
+    border: 3px dashed #ff8c42;
     background: #fff;
     font-weight: bold;
     cursor: pointer;
     transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.95em;
+    font-family: inherit;
 }
 
 .btn-social:hover {
     background: #ffe0b3;
     transform: scale(1.05);
+    border-color: #ff6b00;
 }
 
-/* ===== TOGGLE ===== */
-.toggle-auth {
-    text-align: center;
-    margin-top: 15px;
-    font-size: 0.85em;
+.btn-social:active {
+    transform: scale(0.95);
 }
 
-.toggle-auth a {
-    color: #ff6b00;
-    font-weight: bold;
+.btn-social svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .login-container {
+        padding: 30px 20px;
+        margin: 20px;
+    }
+
+    .logo h1 {
+        font-size: 2.2em;
+    }
+
+    .form-group input {
+        padding: 11px;
+        font-size: 16px;
+    }
+
+    .btn-login {
+        padding: 12px;
+        font-size: 1em;
+    }
+
+    .btn-social {
+        padding: 11px;
+        font-size: 0.9em;
+    }
 }
