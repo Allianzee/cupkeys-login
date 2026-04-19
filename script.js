@@ -152,19 +152,22 @@ async function handleAuthSuccess(user) {
     }
 }
 
-// ====== REDIRECT TO GAME ======
 function redirectToGame(token, userId, userEmail) {
-    const redirectUrl = `cupkeys://auth?token=${encodeURIComponent(token)}&userid=${userId}&email=${encodeURIComponent(userEmail)}`;
-    
-    console.log("Redirecting to game with token");
+    // Read the state that UE5 sent us
+    const urlParams = new URLSearchParams(window.location.search);
+    const state = urlParams.get('state') || '';
+
+    if (!state) {
+        console.warn('No state parameter found in URL');
+    }
+
+    const redirectUrl = `cupkeys://auth?token=${encodeURIComponent(token)}&userid=${encodeURIComponent(userId)}&email=${encodeURIComponent(userEmail)}&state=${encodeURIComponent(state)}`;
+
+    console.log("Redirecting to game with state:", state);
     window.location.href = redirectUrl;
 
-    // Fallback if game doesn't open
     setTimeout(() => {
-        showStatus(`Token ready! If game didn't open, check console. ✓`);
-        console.log("Auth Token:", token.substring(0, 30) + "...");
-        console.log("User ID:", userId);
-        console.log("Email:", userEmail);
+        showStatus('Login complete! Switch back to the game ✓');
     }, 2000);
 }
 
